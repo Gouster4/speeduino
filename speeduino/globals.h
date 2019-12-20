@@ -10,8 +10,8 @@
   #define LED_BUILTIN 13
   #define CORE_AVR
   #define BOARD_H "board_avr2560.h"
-  #define INJ_CHANNELS 4
-  #define IGN_CHANNELS 5
+  #define INJ_CHANNELS 6
+  #define IGN_CHANNELS 3
 
   //#define TIMER5_MICROS
 
@@ -386,8 +386,8 @@ volatile byte TIMER_mask;
 volatile byte LOOP_TIMER;
 
 //These functions all do checks on a pin to determine if it is already in use by another (higher importance) function
-#define pinIsInjector(pin)  ( ((pin) == pinInjector1) || ((pin) == pinInjector2) || ((pin) == pinInjector3) || ((pin) == pinInjector4) )
-#define pinIsIgnition(pin)  ( ((pin) == pinCoil1) || ((pin) == pinCoil2) || ((pin) == pinCoil3) || ((pin) == pinCoil4) )
+#define pinIsInjector(pin)  ( ((pin) == pinInjector1) || ((pin) == pinInjector2) || ((pin) == pinInjector3) || ((pin) == pinInjector4) || ((pin) == pinInjector5) || ((pin) == pinInjector6) )
+#define pinIsIgnition(pin)  ( ((pin) == pinCoil1) || ((pin) == pinCoil2) || ((pin) == pinCoil3) || ((pin) == pinCoil4) || ((pin) == pinCoil5) || ((pin) == pinCoil6) )
 #define pinIsSensor(pin)    ( ((pin) == pinCLT) || ((pin) == pinIAT) || ((pin) == pinMAP) || ((pin) == pinTPS) || ((pin) == pinO2) || ((pin) == pinBat) )
 #define pinIsUsed(pin)      ( pinIsInjector((pin)) || pinIsIgnition((pin)) || pinIsSensor((pin)) )
 #define pinIsOutput(pin)    ( ((pin) == pinFuelPump) || ((pin) == pinFan) || ((pin) == pinVVT_1) || ((pin) == pinVVT_2) || ((pin) == pinBoost) || ((pin) == pinIdle1) || ((pin) == pinIdle2) || ((pin) == pinTachOut) )
@@ -615,7 +615,11 @@ struct config2 {
   byte IdleAdvDelay : 5;
   byte idleAdvRPM;
   byte idleAdvTPS;
-  byte unused2_95[33];
+  
+  uint16_t inj5Ang;
+  uint16_t inj6Ang;
+  
+  byte unused2_99[29];
 
 #if defined(CORE_AVR)
   };
@@ -1004,10 +1008,10 @@ struct config10 {
 
 byte pinInjector1; //Output pin injector 1
 byte pinInjector2; //Output pin injector 2
-byte pinInjector3; //Output pin injector 3 is on
-byte pinInjector4; //Output pin injector 4 is on
-byte pinInjector5; //Output pin injector 5 NOT USED YET
-byte pinInjector6; //Placeholder only - NOT USED
+byte pinInjector3; //Output pin injector 3
+byte pinInjector4; //Output pin injector 4
+byte pinInjector5; //Output pin injector 5
+byte pinInjector6; //Output pin injector 6
 byte pinInjector7; //Placeholder only - NOT USED
 byte pinInjector8; //Placeholder only - NOT USED
 byte pinCoil1; //Pin for coil 1

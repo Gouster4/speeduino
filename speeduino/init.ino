@@ -413,7 +413,7 @@ void initialiseAll()
         channel3IgnDegrees = configPage2.oddfire3;
         }
 
-        //For alternatiing injection, the squirt occurs at different times for each channel
+        //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) || (configPage2.strokes == TWO_STROKE) )
         {
           channel1InjDegrees = 0;
@@ -480,7 +480,7 @@ void initialiseAll()
           maxIgnOutputs = 4;
         }
 
-        //For alternatiing injection, the squirt occurs at different times for each channel
+        //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) || (configPage2.strokes == TWO_STROKE) )
         {
           channel2InjDegrees = 180;
@@ -542,7 +542,7 @@ void initialiseAll()
           CRANK_ANGLE_MAX_IGN = 720;
         }
 
-        //For alternatiing injection, the squirt occurs at different times for each channel
+        //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) || (configPage2.strokes == TWO_STROKE) )
         {
           channel1InjDegrees = 0;
@@ -580,20 +580,30 @@ void initialiseAll()
         break;
     case 6:
         channel1IgnDegrees = 0;
-        channel1InjDegrees = 0;
         channel2IgnDegrees = 120;
-        channel2InjDegrees = 120;
         channel3IgnDegrees = 240;
-        channel3InjDegrees = 240;
         maxIgnOutputs = 3;
 
-        //Adjust the injection angles based on the number of squirts
-        if (currentStatus.nSquirts > 2)
+        //For alternating injection, the squirt occurs at different times for each channel
+        if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) )
         {
-          channel2InjDegrees = (channel2InjDegrees * 2) / currentStatus.nSquirts;
-          channel3InjDegrees = (channel3InjDegrees * 2) / currentStatus.nSquirts;
+          channel1InjDegrees = 0;
+          channel2InjDegrees = 120;
+          channel3InjDegrees = 240;
+          if (!configPage2.injTiming)
+          {
+            //For simultaneous, all squirts happen at the same time
+            channel1InjDegrees = 0;
+            channel2InjDegrees = 0;
+            channel3InjDegrees = 0;
+          }
+          else if (currentStatus.nSquirts > 2)
+          {
+            //Adjust the injection angles based on the number of squirts
+            channel2InjDegrees = (channel2InjDegrees * 2) / currentStatus.nSquirts;
+            channel3InjDegrees = (channel3InjDegrees * 2) / currentStatus.nSquirts;
+          }
         }
-
     #if INJ_CHANNELS >= 6
         if (configPage2.injLayout == INJ_SEQUENTIAL)
         {
@@ -613,16 +623,6 @@ void initialiseAll()
           req_fuel_uS = req_fuel_uS * 2;
         }
     #endif
-
-        if (!configPage2.injTiming) 
-        { 
-          //For simultaneous, all squirts happen at the same time
-          channel1InjDegrees = 0;
-          channel2InjDegrees = 0;
-          channel3InjDegrees = 0; 
-        } 
-
-        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -676,7 +676,7 @@ void initialiseAll()
           channel4InjDegrees = 0; 
         }
 
-        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
+        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 6 cylinders
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -740,7 +740,7 @@ void initialiseAll()
         break;
 
     case IGN_MODE_WASTEDCOP:
-        //Wasted COP mode. Ignition channels 1&3 and 2&4 are paired together
+        //Wasted COP mode for >4 cylinders. Ignition channels 1&3 and 2&4 are paired together
         //This is not a valid mode for >4 cylinders
         if( configPage2.nCylinders <= 4 )
         {
@@ -754,9 +754,26 @@ void initialiseAll()
           ign4StartFunction = nullCallback;
           ign4EndFunction = nullCallback;
         }
+        //Wasted COP mode for 6 cylinders. Ignition channels 1&4, 2&5 and 3&6 are paired together
+        else if( configPage2.nCylinders == 6 )
+          {
+          ign1StartFunction = beginCoil1and4Charge;
+          ign1EndFunction = endCoil1and4Charge;
+          ign2StartFunction = beginCoil2and5Charge;
+          ign2EndFunction = endCoil2and5Charge;
+          ign3StartFunction = beginCoil3and6Charge;
+          ign3EndFunction = endCoil3and6Charge;
+
+          ign4StartFunction = nullCallback;
+          ign4EndFunction = nullCallback;
+          ign5StartFunction = nullCallback;
+          ign5EndFunction = nullCallback;
+          ign6StartFunction = nullCallback;
+          ign6EndFunction = nullCallback;
+        }
         else
         {
-          //If the person has inadvertantly selected this when running more than 4 cylinders, just use standard Wasted spark mode
+          //If the person has inadvertantly selected this when running more than 4 cylinders or other than 6 cylinders, just use standard Wasted spark mode
           ign1StartFunction = beginCoil1Charge;
           ign1EndFunction = endCoil1Charge;
           ign2StartFunction = beginCoil2Charge;
@@ -771,22 +788,45 @@ void initialiseAll()
         break;
 
     case IGN_MODE_SEQUENTIAL:
-        ign1StartFunction = beginCoil1Charge;
-        ign1EndFunction = endCoil1Charge;
-        ign2StartFunction = beginCoil2Charge;
-        ign2EndFunction = endCoil2Charge;
-        ign3StartFunction = beginCoil3Charge;
-        ign3EndFunction = endCoil3Charge;
-        ign4StartFunction = beginCoil4Charge;
-        ign4EndFunction = endCoil4Charge;
-        ign5StartFunction = beginCoil5Charge;
-        ign5EndFunction = endCoil5Charge;
-        ign6StartFunction = beginCoil6Charge;
-        ign6EndFunction = endCoil6Charge;
-        ign7StartFunction = beginCoil7Charge;
-        ign7EndFunction = endCoil7Charge;
-        ign8StartFunction = beginCoil8Charge;
-        ign8EndFunction = endCoil8Charge;
+        
+        if( configPage2.nCylinders == 6 )
+        //Special case to run 6cyl seqvential with mega. Basically just wasted spark, but change the ignition output based on engine rotation
+        //TBD to change this so that MCUs that allow 6 timers for igntion can use the regular seqvential code and leave this only for mega
+        {
+          ign1StartFunction = beginCoil1or4Charge;
+          ign1EndFunction = endCoil1or4Charge;
+          ign2StartFunction = beginCoil2or5Charge;
+          ign2EndFunction = endCoil2or5Charge;
+          ign3StartFunction = beginCoil3or6Charge;
+          ign3EndFunction = endCoil3or6Charge;
+
+          ign4StartFunction = nullCallback;
+          ign4EndFunction = nullCallback;
+          ign5StartFunction = nullCallback;
+          ign5EndFunction = nullCallback;
+          ign6StartFunction = nullCallback;
+          ign6EndFunction = nullCallback;
+        }
+        else
+        {
+        //The regular Seqvential
+          ign1StartFunction = beginCoil1Charge;
+          ign1EndFunction = endCoil1Charge;
+          ign2StartFunction = beginCoil2Charge;
+          ign2EndFunction = endCoil2Charge;
+          ign3StartFunction = beginCoil3Charge;
+          ign3EndFunction = endCoil3Charge;
+          ign4StartFunction = beginCoil4Charge;
+          ign4EndFunction = endCoil4Charge;
+          ign5StartFunction = beginCoil5Charge;
+          ign5EndFunction = endCoil5Charge;
+          ign6StartFunction = beginCoil6Charge;
+          ign6EndFunction = endCoil6Charge;
+          ign7StartFunction = beginCoil7Charge;
+          ign7EndFunction = endCoil7Charge;
+          ign8StartFunction = beginCoil8Charge;
+          ign8EndFunction = endCoil8Charge;
+        }
         break;
 
     case IGN_MODE_ROTARY:
@@ -872,10 +912,16 @@ void initialiseAll()
     unsigned long primingValue = table2D_getValue(&PrimingPulseTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
     if(primingValue > 0)
     {
-      setFuelSchedule1(100, (primingValue * 100 * 5)); //to acheive long enough priming pulses, the values in tuner studio are divided by 0.5 instead of 0.1, so multiplier of 5 is required.
+      setFuelSchedule1(100, (primingValue * 100 * 5)); //to achieve long enough priming pulses, the values in tunerstudio are divided by 0.5 instead of 0.1, so multiplier of 5 is required.
       setFuelSchedule2(100, (primingValue * 100 * 5));
       setFuelSchedule3(100, (primingValue * 100 * 5));
       setFuelSchedule4(100, (primingValue * 100 * 5));
+      #if INJ_CHANNELS >= 5
+      setFuelSchedule5(100, (primingValue * 100 * 5));
+      #endif
+      #if INJ_CHANNELS >= 6
+      setFuelSchedule6(100, (primingValue * 100 * 5));
+      #endif
     }
 
     initialisationComplete = true;
@@ -1005,9 +1051,9 @@ void setPinMapping(byte boardID)
       pinInjector1 = 8; //Output pin injector 1 is on
       pinInjector2 = 9; //Output pin injector 2 is on
       pinInjector3 = 10; //Output pin injector 3 is on
-      pinInjector4 = 11; //Output pin injector 4 is on
-      pinInjector5 = 12; //Output pin injector 5 is on
-      pinInjector6 = 50; //CAUTION: Uses the same as Coil 4 below. 
+      pinInjector4 = 7; //Output pin injector 4 is on
+      pinInjector5 = 6; //Output pin injector 5 is on
+      pinInjector6 = 5; //CAUTION: Uses the same as Coil 4 below. 
       pinCoil1 = 40; //Pin for coil 1
       pinCoil2 = 38; //Pin for coil 2
       pinCoil3 = 52; //Pin for coil 3
@@ -1023,9 +1069,9 @@ void setPinMapping(byte boardID)
       pinBat = A4; //Battery reference voltage pin
       pinDisplayReset = 48; // OLED reset pin
       pinTachOut = 49; //Tacho output pin  (Goes to ULN2803)
-      pinIdle1 = 5; //Single wire idle control
-      pinIdle2 = 6; //2 wire idle control
-      pinBoost = 7; //Boost control
+      pinIdle1 = 25; //Single wire idle control
+      pinIdle2 = 26; //2 wire idle control
+      pinBoost = 27; //Boost control
       pinVVT_1 = 4; //Default VVT output
       pinFuelPump = 45; //Fuel pump output  (Goes to ULN2803)
       pinStepperDir = 16; //Direction pin  for DRV8825 driver
@@ -1453,6 +1499,44 @@ void setPinMapping(byte boardID)
       pinSpareLOut5 = 53;
       pinFan = 47; //Pin for the fan output
     #endif
+      break;
+
+   case 31:
+      //Pin mappings for the BMW PnP PCBs by pazi88. This is an AVR only module. At least for now
+      pinInjector1 = 8; //Output pin injector 1
+      pinInjector2 = 9; //Output pin injector 2
+      pinInjector3 = 10; //Output pin injector 3
+      pinInjector4 = 11; //Output pin injector 4
+      pinInjector5 = 12; //Output pin injector 5
+      pinInjector6 = 50; //Output pin injector 6
+      pinCoil1 = 40; //Pin for coil 1
+      pinCoil2 = 38; //Pin for coil 2
+      pinCoil3 = 52; //Pin for coil 3
+      pinCoil4 = 48; //Pin for coil 4
+      pinCoil5 = 36; //Pin for coil 5
+	  pinCoil6 = 34; //Pin for coil 6
+      pinTrigger = 19; //The CAS pin
+      pinTrigger2 = 18; //The Cam Sensor pin
+      pinTPS = A2;//TPS input pin
+      pinMAP = A3; //MAP sensor pin
+      pinIAT = A0; //IAT sensor pin
+      pinCLT = A1; //CLS sensor pin
+      pinO2 = A8; //O2 Sensor pin
+      pinBat = A4; //Battery reference voltage pin
+      pinDisplayReset = 48; // OLED reset pin
+      pinTachOut = 49; //Tacho output pin  (Goes to ULN2003)
+      pinIdle1 = 5; //ICV pin1
+      pinIdle2 = 6; //ICV pin3
+      pinBoost = 7; //Boost control
+      pinVVT_1 = 4; //VVT output
+      pinFuelPump = 45; //Fuel pump output  (Goes to ULN2003)
+      pinStepperDir = 16; //Stepper valve isn't used with these
+      pinStepperStep = 17; //Stepper valve isn't used with these
+      pinStepperEnable = 24; //Stepper valve isn't used with these
+      pinFan = 47; //Pin for the fan output (Goes to ULN2003)
+      pinLaunch = 51; //Launch control pin
+      pinFlex = 2; // Flex sensor
+      pinResetControl = 43; //Reset control output
       break;
 
     case 40:
@@ -2046,11 +2130,13 @@ void setPinMapping(byte boardID)
     pinMode(pinCoil3, OUTPUT);
     pinMode(pinCoil4, OUTPUT);
     pinMode(pinCoil5, OUTPUT);
+    pinMode(pinCoil6, OUTPUT);
     pinMode(pinInjector1, OUTPUT);
     pinMode(pinInjector2, OUTPUT);
     pinMode(pinInjector3, OUTPUT);
     pinMode(pinInjector4, OUTPUT);
     pinMode(pinInjector5, OUTPUT);
+    pinMode(pinInjector6, OUTPUT);
 
     inj1_pin_port = portOutputRegister(digitalPinToPort(pinInjector1));
     inj1_pin_mask = digitalPinToBitMask(pinInjector1);

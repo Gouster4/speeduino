@@ -38,4 +38,61 @@ void endCoil1and3Charge()   { digitalWrite(pinCoil1, coilLOW);  digitalWrite(pin
 void beginCoil2and4Charge() { digitalWrite(pinCoil2, coilHIGH); digitalWrite(pinCoil4, coilHIGH); tachoOutputFlag = READY; }
 void endCoil2and4Charge()   { digitalWrite(pinCoil2, coilLOW);  digitalWrite(pinCoil4, coilLOW);  }
 
+//For 6cyl wasted COP mode)
+void beginCoil1and4Charge() { digitalWrite(pinCoil1, coilHIGH); digitalWrite(pinCoil4, coilHIGH); tachoOutputFlag = READY; }
+void endCoil1and4Charge()   { digitalWrite(pinCoil1, coilLOW);  digitalWrite(pinCoil4, coilLOW);  }
+void beginCoil2and5Charge() { digitalWrite(pinCoil2, coilHIGH); digitalWrite(pinCoil5, coilHIGH); tachoOutputFlag = READY; }
+void endCoil2and5Charge()   { digitalWrite(pinCoil2, coilLOW);  digitalWrite(pinCoil5, coilLOW);  }
+void beginCoil3and6Charge() { digitalWrite(pinCoil3, coilHIGH); digitalWrite(pinCoil6, coilHIGH); tachoOutputFlag = READY; }
+void endCoil3and6Charge()   { digitalWrite(pinCoil3, coilLOW);  digitalWrite(pinCoil6, coilLOW);  }
+
+//Special case for 6cyl seqvential with mega
+void beginCoil1or4Charge()
+    {
+    tachoOutputFlag = READY;
+    //change ignition pin based on which rotation engine is
+    if(revolutionOne == 0 ){
+        digitalWrite(pinCoil1, coilHIGH);
+        }
+    else if(revolutionOne == 1 ){
+        digitalWrite(pinCoil4, coilHIGH);
+        }
+    }
+void endCoil1or4Charge()
+    {
+        //both coils can go to LOW state, because the way this works, these can't be charged at the same time anyway.
+        digitalWrite(pinCoil1, coilLOW);
+        digitalWrite(pinCoil4, coilLOW);
+    }
+void beginCoil2or5Charge()
+    {
+    tachoOutputFlag = READY;
+    if(revolutionOne == 0 ){
+        digitalWrite(pinCoil2, coilHIGH);
+        }
+    else if(revolutionOne == 1 ){
+        digitalWrite(pinCoil5, coilHIGH);
+        }
+    }
+void endCoil2or5Charge()
+    {
+        digitalWrite(pinCoil2, coilLOW);
+        digitalWrite(pinCoil5, coilLOW);
+    }
+void beginCoil3or6Charge()
+    {
+    tachoOutputFlag = READY;
+    if(revolutionOne == 0 ){
+        digitalWrite(pinCoil3, coilHIGH);
+        }
+    else if(revolutionOne == 1 ){
+        digitalWrite(pinCoil6, coilHIGH);
+        }
+    }
+void endCoil3or6Charge()
+    {
+        digitalWrite(pinCoil3, coilLOW);
+        digitalWrite(pinCoil6, coilLOW);
+    }
+
 void nullCallback() { return; }

@@ -45,6 +45,23 @@ void beginCoil1and3Charge();
 void endCoil1and3Charge();
 void beginCoil2and4Charge();
 void endCoil2and4Charge();
+
+//For 6-cyl cop
+void beginCoil1and4Charge();
+void endCoil1and4Charge();
+void beginCoil2and5Charge();
+void endCoil2and5Charge();
+void beginCoil3and6Charge();
+void endCoil3and6Charge();
+
+//For 6-cyl seqvential with mega
+void beginCoil1or4Charge();
+void endCoil1or4Charge();
+void beginCoil2or5Charge();
+void endCoil2or5Charge();
+void beginCoil3or6Charge();
+void endCoil3or6Charge();
+
 /*
 #define beginCoil1and3Charge() beginCoil1Charge(); beginCoil3Charge()
 #define endCoil1and3Charge()
@@ -93,8 +110,10 @@ void endCoil2and4Charge();
 
 #define openInjector1and4() openInjector1(); openInjector4()
 #define closeInjector1and4() closeInjector1(); closeInjector4()
-#define openInjector2and3() openInjector2(); openInjector3()
-#define closeInjector2and3() closeInjector2(); closeInjector3()
+#define openInjector2and5() openInjector2(); openInjector5()
+#define closeInjector2and5() closeInjector2(); closeInjector5()
+#define openInjector3and6() openInjector3(); openInjector6()
+#define closeInjector3and6() closeInjector3(); closeInjector6()
 
 //5 cylinder support doubles up injector 3 as being closese to inj 5 (Crank angle)
 #define openInjector3and5() openInjector3(); openInjector5()
