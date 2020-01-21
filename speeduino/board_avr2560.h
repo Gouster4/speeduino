@@ -56,11 +56,11 @@
   #define FUEL1_COMPARE OCR3A
   #define FUEL2_COMPARE OCR3B
   #define FUEL3_COMPARE OCR3C
-  #define FUEL4_COMPARE OCR4A //Replaces ignition 4
-  #define FUEL5_COMPARE OCR4B //Replaces ignition 5
-  #define FUEL6_COMPARE OCR4C //Replaces ignition 6
-  #define FUEL7_COMPARE OCR5C //Replaces ignition 3
-  #define FUEL8_COMPARE OCR5B //Replaces ignition 2
+  #define FUEL4_COMPARE OCR4B
+  #define FUEL5_COMPARE OCR4C //Shared with IGN5
+  #define FUEL6_COMPARE OCR4A //Replaces ignition4
+  #define FUEL7_COMPARE OCR5C //Replaces ignition3
+  #define FUEL8_COMPARE OCR5B //Replaces ignition2
 
   #define IGN1_COMPARE  OCR5A
   #define IGN2_COMPARE  OCR5B

@@ -545,11 +545,25 @@ void initialiseAll()
         //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) || (configPage2.strokes == TWO_STROKE) )
         {
-          channel1InjDegrees = 0;
-          channel2InjDegrees = 72;
-          channel3InjDegrees = 144;
-          channel4InjDegrees = 216;
-          channel5InjDegrees = 288;
+          if (!configPage2.injTiming) 
+          { 
+            //For simultaneous, all squirts happen at the same time
+            channel1InjDegrees = 0;
+            channel2InjDegrees = 0;
+            channel3InjDegrees = 0;
+            channel4InjDegrees = 0;
+            channel5InjDegrees = 0; 
+          }
+          else
+          {
+            channel1InjDegrees = 0;
+            channel2InjDegrees = 72;
+            channel3InjDegrees = 144;
+            channel4InjDegrees = 216;
+            channel5InjDegrees = 288;
+
+            //Divide by currentStatus.nSquirts ?
+          }
         }
         else if (configPage2.injLayout == INJ_SEQUENTIAL)
         {
@@ -561,15 +575,7 @@ void initialiseAll()
 
           CRANK_ANGLE_MAX_INJ = 720;
           currentStatus.nSquirts = 1;
-        }
-        if (!configPage2.injTiming) 
-        { 
-          //For simultaneous, all squirts happen at the same time
-          channel1InjDegrees = 0;
-          channel2InjDegrees = 0;
-          channel3InjDegrees = 0;
-          channel4InjDegrees = 0;
-          channel5InjDegrees = 0; 
+          req_fuel_uS = req_fuel_uS * 2;
         }
 
         channel1InjEnabled = true;
@@ -622,7 +628,17 @@ void initialiseAll()
           currentStatus.nSquirts = 1;
           req_fuel_uS = req_fuel_uS * 2;
         }
+    #else 
+        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
     #endif
+
+        if (!configPage2.injTiming) 
+        { 
+          //For simultaneous, all squirts happen at the same time
+          channel1InjDegrees = 0;
+          channel2InjDegrees = 0;
+          channel3InjDegrees = 0; 
+        } 
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -663,6 +679,8 @@ void initialiseAll()
           currentStatus.nSquirts = 1;
           req_fuel_uS = req_fuel_uS * 2;
         }
+    #else
+        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
     #endif
 
         maxIgnOutputs = 4;
@@ -675,8 +693,6 @@ void initialiseAll()
           channel3InjDegrees = 0;
           channel4InjDegrees = 0; 
         }
-
-        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 6 cylinders
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -1779,7 +1795,30 @@ void setPinMapping(byte boardID)
       #ifdef USE_MC33810
         pinMC33810_1_CS = 10;
         pinMC33810_2_CS = 9;
+
+        //Pin alignment to the MC33810 outputs
+        MC33810_BIT_INJ1 = 3;
+        MC33810_BIT_INJ2 = 1;
+        MC33810_BIT_INJ3 = 0;
+        MC33810_BIT_INJ4 = 2;
+        MC33810_BIT_IGN1 = 5;
+        MC33810_BIT_IGN2 = 6;
+        MC33810_BIT_IGN3 = 7;
+        MC33810_BIT_IGN4 = 8;
+        MC33810_BIT_INJ5 = 3;
+        MC33810_BIT_INJ6 = 1;
+        MC33810_BIT_INJ7 = 0;
+        MC33810_BIT_INJ8 = 2;
+        MC33810_BIT_IGN5 = 5;
+        MC33810_BIT_IGN6 = 6;
+        MC33810_BIT_IGN7 = 7;
+        MC33810_BIT_IGN8 = 8;
       #endif
+
+      #ifdef USE_SPI_EEPROM
+        pinSPIFlash_CS = 6;
+      #endif
+
       #endif
       break;
     
@@ -2179,6 +2218,11 @@ void setPinMapping(byte boardID)
 
     initMC33810();
   #endif
+
+#ifdef USE_SPI_EEPROM
+  //We need to send the flash CS (SS) pin if we're using SPI flash. It cannot read from globals.h
+  EEPROM.begin(pinSPIFlash_CS);
+#endif
 
   tach_pin_port = portOutputRegister(digitalPinToPort(pinTachOut));
   tach_pin_mask = digitalPinToBitMask(pinTachOut);
