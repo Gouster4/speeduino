@@ -18,6 +18,9 @@
 
 void initialiseAll()
 {   
+    initialisationComplete = false; //Tracks whether the setup() function has run completely
+    fpPrimed = false;
+
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
     table3D_setSize(&fuelTable, 16);
@@ -45,14 +48,21 @@ void initialiseAll()
     Serial.begin(115200);
     if (configPage9.enable_secondarySerial == 1) { CANSerial.begin(115200); }
 
-    #if defined(CORE_STM32) || defined(CORE_TEENSY)
+    #if defined(CORE_STM32)
     configPage9.intcan_available = 1;   // device has internal canbus
-    //Teensy onboard CAN not used currently
+    //STM32 can not currently enabled
+    #endif
+
+    #if defined(CORE_TEENSY35)
+    configPage9.intcan_available = 1;   // device has internal canbus
+    //Teensy uses the Flexcan_T4 library to use the internal canbus
     //enable local can interface
-    //setup can interface to 250k
-    //FlexCAN CANbus0(2500000, 0);
-    //static CAN_message_t txmsg,rxmsg;
-    //CANbus0.begin();
+    //setup can interface to 500k
+      //volatile CAN_message_t outMsg;
+      //volatile CAN_message_t inMsg;
+      Can0.begin();
+      Can0.setBaudRate(500000);
+      Can0.enableFIFO();
     #endif
 
     //Repoint the 2D table structs to the config pages that were just loaded
@@ -298,6 +308,11 @@ void initialiseAll()
     dwellLimit_uS = (1000 * configPage4.dwellLimit);
     currentStatus.nChannels = ((uint8_t)INJ_CHANNELS << 4) + IGN_CHANNELS; //First 4 bits store the number of injection channels, 2nd 4 store the number of ignition channels
     fpPrimeTime = 0;
+    ms_counter = 0;
+    fixedCrankingOverride = 0;
+    timer5_overflow_count = 0;
+    toothHistoryIndex = 0;
+    toothHistorySerialIndex = 0;
 
     noInterrupts();
     initialiseTriggers();
@@ -312,7 +327,6 @@ void initialiseAll()
     //Initial values for loop times
     previousLoopTime = 0;
     currentLoopTime = micros_safe();
-
     mainLoopCount = 0;
 
     currentStatus.nSquirts = configPage2.nCylinders / configPage2.divider; //The number of squirts being requested. This is manaully overriden below for sequential setups (Due to TS req_fuel calc limitations)
@@ -321,6 +335,25 @@ void initialiseAll()
     else { CRANK_ANGLE_MAX_INJ = 360 / currentStatus.nSquirts; }
 
     //Calculate the number of degrees between cylinders
+    //Swet some default values. These will be updated below if required. 
+    CRANK_ANGLE_MAX = 720;
+    CRANK_ANGLE_MAX_IGN = 360;
+    CRANK_ANGLE_MAX_INJ = 360;
+    channel1InjEnabled = true;
+    channel2InjEnabled = false;
+    channel3InjEnabled = false;
+    channel4InjEnabled = false;
+    channel5InjEnabled = false;
+    channel6InjEnabled = false;
+    channel7InjEnabled = false;
+    channel8InjEnabled = false;
+
+    ignition1EndAngle = 0;
+    ignition2EndAngle = 0;
+    ignition3EndAngle = 0;
+    ignition4EndAngle = 0;
+    ignition5EndAngle = 0;
+
     switch (configPage2.nCylinders) {
     case 1:
         channel1IgnDegrees = 0;
@@ -1112,7 +1145,7 @@ void setPinMapping(byte boardID)
         pinCoil4 = 29;
         pinCoil3 = 30;
         pinO2 = A22;
-      #elif defined(STM32F4)
+      #elif defined(ARDUINO_BLACK_F407VE)
         //Pin definitions for experimental board Tjeerd 
         //Black F407VE wiki.stm32duino.com/index.php?title=STM32F407
 
@@ -1223,33 +1256,29 @@ void setPinMapping(byte boardID)
         pinInjector2 = PB6; //Output pin injector 2 is on
         pinInjector3 = PB5; //Output pin injector 3 is on
         pinInjector4 = PB4; //Output pin injector 4 is on
-        pinCoil1 = PB3; //Pin for coil 1
-        pinCoil2 = PA15; //Pin for coil 2
-        pinCoil3 = PA14; //Pin for coil 3
-        pinCoil4 = PA9; //Pin for coil 4
-        pinCoil5 = PA8; //Pin for coil 5
-        pinTPS = A0; //TPS input pin
-        pinMAP = A1; //MAP sensor pin
-        pinIAT = A2; //IAT sensor pin
-        pinCLT = A3; //CLS sensor pin
-        pinO2 = A4; //O2 Sensor pin
-        pinBat = A5; //Battery reference voltage pin
+        pinCoil1 = PB9; //Pin for coil 1
+        pinCoil2 = PB8; //Pin for coil 2
+        pinCoil3 = PB3; //Pin for coil 3
+        pinCoil4 = PA15; //Pin for coil 4
+        pinTPS = A2;//TPS input pin
+        pinMAP = A3; //MAP sensor pin
+        pinIAT = A0; //IAT sensor pin
+        pinCLT = A1; //CLS sensor pin
+        pinO2 = A8; //O2 Sensor pin
+        pinBat = A4; //Battery reference voltage pin
         pinBaro = pinMAP;
         pinIdle1 = PB2; //Single wire idle control
-        pinIdle2 = PA2; //2 wire idle control
-        pinBoost = PA1; //Boost control
-        pinVVT_1 = PA0; //Default VVT output
+        pinBoost = PA8; //Boost control
+        //pinVVT_1 = 4; //Default VVT output
         pinStepperDir = PC15; //Direction pin  for DRV8825 driver
         pinStepperStep = PC14; //Step pin for DRV8825 driver
         pinStepperEnable = PC13; //Enable pin for DRV8825
-        pinDisplayReset = PB2; // OLED reset pin
-        pinFan = PB1; //Pin for the fan output
-        pinFuelPump = PB11; //Fuel pump output
-        pinTachOut = PB10; //Tacho output pin
+        pinFuelPump = PB10; //Fuel pump output
+        pinTachOut = PC13; //Tacho output pin
         //external interrupt enabled pins
-        pinFlex = PB8; // Flex sensor (Must be external interrupt enabled)
-        pinTrigger = PA10; //The CAS pin
-        pinTrigger2 = PA13; //The Cam Sensor pin
+        pinFlex = PB1; // Flex sensor (Must be external interrupt enabled)
+        pinTrigger = PB0; //The CAS pin
+        pinTrigger2 = PB2; //The Cam Sensor pin
       #endif
       break;
 
@@ -1822,7 +1851,7 @@ void setPinMapping(byte boardID)
       #endif
       break;
     
-   #if defined(STM32F4)
+   #if defined(ARDUINO_BLACK_F407VE)
     case 60:
        //Pin definitions for experimental board Tjeerd 
         //Black F407VE wiki.stm32duino.com/index.php?title=STM32F407
@@ -1972,7 +2001,7 @@ void setPinMapping(byte boardID)
     #endif
       break;
     default:
-      #if defined(STM32F4)
+      #if defined(ARDUINO_BLACK_F407VE)
        //Pin definitions for experimental board Tjeerd 
         //Black F407VE wiki.stm32duino.com/index.php?title=STM32F407
 
