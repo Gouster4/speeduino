@@ -51,10 +51,11 @@ void beginCoil1or4Charge()
     {
     tachoOutputFlag = READY;
     //change ignition pin based on which rotation engine is
-    if(revolutionOne == 0 ){
+	int crankAngle = getCrankAngle();
+    if(crankAngle < 380 ){
         digitalWrite(pinCoil1, coilHIGH);
         }
-    else if(revolutionOne == 1 ){
+    else{
         digitalWrite(pinCoil4, coilHIGH);
         }
     }
@@ -67,10 +68,11 @@ void endCoil1or4Charge()
 void beginCoil2or5Charge()
     {
     tachoOutputFlag = READY;
-    if(revolutionOne == 0 ){
+	int crankAngle = getCrankAngle();
+    if(crankAngle < 380 ){
         digitalWrite(pinCoil2, coilHIGH);
         }
-    else if(revolutionOne == 1 ){
+    else{
         digitalWrite(pinCoil5, coilHIGH);
         }
     }
@@ -82,10 +84,11 @@ void endCoil2or5Charge()
 void beginCoil3or6Charge()
     {
     tachoOutputFlag = READY;
-    if(revolutionOne == 0 ){
+	int crankAngle = getCrankAngle();
+    if(crankAngle < 380 ){
         digitalWrite(pinCoil3, coilHIGH);
         }
-    else if(revolutionOne == 1 ){
+    else{
         digitalWrite(pinCoil6, coilHIGH);
         }
     }
