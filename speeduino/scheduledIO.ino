@@ -46,7 +46,7 @@ void endCoil2and5Charge()   { digitalWrite(pinCoil2, coilLOW);  digitalWrite(pin
 void beginCoil3and6Charge() { digitalWrite(pinCoil3, coilHIGH); digitalWrite(pinCoil6, coilHIGH); tachoOutputFlag = READY; }
 void endCoil3and6Charge()   { digitalWrite(pinCoil3, coilLOW);  digitalWrite(pinCoil6, coilLOW);  }
 
-//Special case for 6cyl seqvential with mega
+//Special case for 6cyl seqvential if not enough timers for it
 void beginCoil1or4Charge()
     {
     tachoOutputFlag = READY;

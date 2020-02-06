@@ -622,7 +622,12 @@ void initialiseAll()
         channel2IgnDegrees = 120;
         channel3IgnDegrees = 240;
         maxIgnOutputs = 3;
-
+    #if IGN_CHANNELS >= 6
+        channel4IgnDegrees = 360;
+        channel5IgnDegrees = 480;
+        channel6IgnDegrees = 600;
+        maxIgnOutputs = 6;
+    #endif
         //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) )
         {
@@ -682,7 +687,13 @@ void initialiseAll()
         channel2IgnDegrees = channel2InjDegrees = 90;
         channel3IgnDegrees = channel3InjDegrees = 180;
         channel4IgnDegrees = channel4InjDegrees = 270;
-
+    #if IGN_CHANNELS >= 8
+        channel5IgnDegrees = 360;
+        channel6IgnDegrees = 450;
+        channel7IgnDegrees = 540;
+        channel8IgnDegrees = 630;
+        maxIgnOutputs = 8;
+    #endif
         //Adjust the injection angles based on the number of squirts
         if (currentStatus.nSquirts > 2)
         {
@@ -789,8 +800,8 @@ void initialiseAll()
         break;
 
     case IGN_MODE_WASTEDCOP:
-        //Wasted COP mode for >4 cylinders. Ignition channels 1&3 and 2&4 are paired together
-        //This is not a valid mode for >4 cylinders
+        //Wasted COP mode. This is not a valid mode for >6 cylinders
+        //Wasted COP mode for 4 cylinders. Ignition channels 1&3 and 2&4 are paired together
         if( configPage2.nCylinders <= 4 )
         {
           ign1StartFunction = beginCoil1and3Charge;
@@ -837,10 +848,9 @@ void initialiseAll()
         break;
 
     case IGN_MODE_SEQUENTIAL:
-        
-        if( configPage2.nCylinders == 6 )
         //Special case to run 6cyl seqvential with mega. Basically just wasted spark, but change the ignition output based on engine rotation
-        //TBD to change this so that MCUs that allow 6 timers for igntion can use the regular seqvential code and leave this only for mega
+        #if IGN_CHANNELS <= 5
+        if( configPage2.nCylinders == 6 )
         {
           ign1StartFunction = beginCoil1or4Charge;
           ign1EndFunction = endCoil1or4Charge;
@@ -857,6 +867,7 @@ void initialiseAll()
           ign6EndFunction = nullCallback;
         }
         else
+        #endif
         {
         //The regular Seqvential
           ign1StartFunction = beginCoil1Charge;
