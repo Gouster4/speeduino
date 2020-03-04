@@ -15,6 +15,7 @@
 #include "idle.h"
 #include "table.h"
 #include BOARD_H //Note that this is not a real file, it is defined in globals.h. 
+#include EEPROM_LIB_H 
 
 void initialiseAll()
 {   
@@ -52,13 +53,12 @@ void initialiseAll()
     //STM32 can not currently enabled
     #endif
 
-    #if defined(CORE_TEENSY35)
+    #if defined(CORE_TEENSY)
     configPage9.intcan_available = 1;   // device has internal canbus
     //Teensy uses the Flexcan_T4 library to use the internal canbus
     //enable local can interface
     //setup can interface to 500k
-      //volatile CAN_message_t outMsg;
-      //volatile CAN_message_t inMsg;
+
       Can0.begin();
       Can0.setBaudRate(500000);
       Can0.enableFIFO();
@@ -598,6 +598,7 @@ void initialiseAll()
             //Divide by currentStatus.nSquirts ?
           }
         }
+    #if INJ_CHANNELS >= 5
         else if (configPage2.injLayout == INJ_SEQUENTIAL)
         {
           channel1InjDegrees = 0;
@@ -606,28 +607,36 @@ void initialiseAll()
           channel4InjDegrees = 432;
           channel5InjDegrees = 576;
 
+          channel5InjEnabled = true;
+
           CRANK_ANGLE_MAX_INJ = 720;
           currentStatus.nSquirts = 1;
           req_fuel_uS = req_fuel_uS * 2;
         }
+    #endif
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
-        channel3InjEnabled = false; //this is disabled as injector 5 function calls 3 & 5 together
+        channel3InjEnabled = true;
         channel4InjEnabled = true;
-        channel5InjEnabled = true;
         break;
     case 6:
         channel1IgnDegrees = 0;
         channel2IgnDegrees = 120;
         channel3IgnDegrees = 240;
         maxIgnOutputs = 3;
+
     #if IGN_CHANNELS >= 6
+        if( (configPage4.sparkMode == IGN_MODE_SEQUENTIAL))
+        {
         channel4IgnDegrees = 360;
         channel5IgnDegrees = 480;
         channel6IgnDegrees = 600;
+        CRANK_ANGLE_MAX_IGN = 720;
         maxIgnOutputs = 6;
+        }
     #endif
+
         //For alternating injection, the squirt occurs at different times for each channel
         if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) )
         {
@@ -649,7 +658,7 @@ void initialiseAll()
           }
         }
     #if INJ_CHANNELS >= 6
-        if (configPage2.injLayout == INJ_SEQUENTIAL)
+        else if (configPage2.injLayout == INJ_SEQUENTIAL)
         {
           channel1InjDegrees = 0;
           channel2InjDegrees = 120;
@@ -666,17 +675,7 @@ void initialiseAll()
           currentStatus.nSquirts = 1;
           req_fuel_uS = req_fuel_uS * 2;
         }
-    #else 
-        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
     #endif
-
-        if (!configPage2.injTiming) 
-        { 
-          //For simultaneous, all squirts happen at the same time
-          channel1InjDegrees = 0;
-          channel2InjDegrees = 0;
-          channel3InjDegrees = 0; 
-        } 
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -687,23 +686,47 @@ void initialiseAll()
         channel2IgnDegrees = channel2InjDegrees = 90;
         channel3IgnDegrees = channel3InjDegrees = 180;
         channel4IgnDegrees = channel4InjDegrees = 270;
+		maxIgnOutputs = 4;
+
     #if IGN_CHANNELS >= 8
+        if( (configPage4.sparkMode == IGN_MODE_SEQUENTIAL))
+        {
         channel5IgnDegrees = 360;
         channel6IgnDegrees = 450;
         channel7IgnDegrees = 540;
         channel8IgnDegrees = 630;
         maxIgnOutputs = 8;
+        CRANK_ANGLE_MAX_IGN = 720;
+        }
     #endif
-        //Adjust the injection angles based on the number of squirts
-        if (currentStatus.nSquirts > 2)
+
+        //For alternating injection, the squirt occurs at different times for each channel
+        if( (configPage2.injLayout == INJ_SEMISEQUENTIAL) || (configPage2.injLayout == INJ_PAIRED) )
         {
-          channel2InjDegrees = (channel2InjDegrees * 2) / currentStatus.nSquirts;
-          channel3InjDegrees = (channel3InjDegrees * 2) / currentStatus.nSquirts;
-          channel4InjDegrees = (channel4InjDegrees * 2) / currentStatus.nSquirts;
+          channel1InjDegrees = 0;
+          channel2InjDegrees = 90;
+          channel3InjDegrees = 180;
+          channel4InjDegrees = 270;
+
+          if (!configPage2.injTiming)
+          {
+            //For simultaneous, all squirts happen at the same time
+            channel1InjDegrees = 0;
+            channel2InjDegrees = 0;
+            channel3InjDegrees = 0;
+            channel4InjDegrees = 0;
+          }
+          else if (currentStatus.nSquirts > 2)
+          {
+            //Adjust the injection angles based on the number of squirts
+            channel2InjDegrees = (channel2InjDegrees * 2) / currentStatus.nSquirts;
+            channel3InjDegrees = (channel3InjDegrees * 2) / currentStatus.nSquirts;
+            channel4InjDegrees = (channel4InjDegrees * 2) / currentStatus.nSquirts;
+          }
         }
 
     #if INJ_CHANNELS >= 8
-        if (configPage2.injLayout == INJ_SEQUENTIAL)
+        else if (configPage2.injLayout == INJ_SEQUENTIAL)
         {
           channel1InjDegrees = 0;
           channel2InjDegrees = 90;
@@ -723,20 +746,7 @@ void initialiseAll()
           currentStatus.nSquirts = 1;
           req_fuel_uS = req_fuel_uS * 2;
         }
-    #else
-        configPage2.injLayout = 0; //This is a failsafe. We can never run semi-sequential with more than 4 cylinders
     #endif
-
-        maxIgnOutputs = 4;
-
-        if (!configPage2.injTiming) 
-        { 
-          //For simultaneous, all squirts happen at the same time
-          channel1InjDegrees = 0;
-          channel2InjDegrees = 0;
-          channel3InjDegrees = 0;
-          channel4InjDegrees = 0; 
-        }
 
         channel1InjEnabled = true;
         channel2InjEnabled = true;
@@ -762,6 +772,112 @@ void initialiseAll()
       if(configPage2.strokes == FOUR_STROKE) { CRANK_ANGLE_MAX = 720; }
     }
     
+    switch(configPage2.injLayout)
+    {
+    case INJ_PAIRED:
+        //Paired injection
+        inj1StartFunction = openInjector1;
+        inj1EndFunction = closeInjector1;
+        inj2StartFunction = openInjector2;
+        inj2EndFunction = closeInjector2;
+        inj3StartFunction = openInjector3;
+        inj3EndFunction = closeInjector3;
+        inj4StartFunction = openInjector4;
+        inj4EndFunction = closeInjector4;
+        inj5StartFunction = openInjector5;
+        inj5EndFunction = closeInjector5;
+        break;
+
+    case INJ_SEMISEQUENTIAL:
+        //Semi-Sequential injection. Currently possible with 4, 6 and 8 cylinders. 5 cylinder is a special case
+        if( configPage2.nCylinders == 4 )
+        {
+          inj1StartFunction = openInjector1and4;
+          inj1EndFunction = closeInjector1and4;
+          inj2StartFunction = openInjector2and3;
+          inj2EndFunction = closeInjector2and3;
+        }
+        else if( configPage2.nCylinders == 5 ) //This is similar to the paired injection but uses five injector outputs instead of four
+        {
+          inj1StartFunction = openInjector1;
+          inj1EndFunction = closeInjector1;
+          inj2StartFunction = openInjector2;
+          inj2EndFunction = closeInjector2;
+          inj3StartFunction = openInjector3and5;
+          inj3EndFunction = closeInjector3and5;
+          inj4StartFunction = openInjector4;
+          inj4EndFunction = closeInjector4;
+        }
+        else if( configPage2.nCylinders == 6 )
+        {
+          inj1StartFunction = openInjector1and4;
+          inj1EndFunction = closeInjector1and4;
+          inj2StartFunction = openInjector2and5;
+          inj2EndFunction = closeInjector2and5;
+          inj3StartFunction = openInjector3and6;
+          inj3EndFunction = closeInjector3and6;
+        }
+        else if( configPage2.nCylinders == 8 )
+        {
+          inj1StartFunction = openInjector1and5;
+          inj1EndFunction = closeInjector1and5;
+          inj2StartFunction = openInjector2and6;
+          inj2EndFunction = closeInjector2and6;
+          inj3StartFunction = openInjector3and7;
+          inj3EndFunction = closeInjector3and7;
+          inj4StartFunction = openInjector4and8;
+          inj4EndFunction = closeInjector4and8;
+        }
+        else
+        {
+          //Fall back to paired injection
+          inj1StartFunction = openInjector1;
+          inj1EndFunction = closeInjector1;
+          inj2StartFunction = openInjector2;
+          inj2EndFunction = closeInjector2;
+          inj3StartFunction = openInjector3;
+          inj3EndFunction = closeInjector3;
+          inj4StartFunction = openInjector4;
+          inj4EndFunction = closeInjector4;
+          inj5StartFunction = openInjector5;
+          inj5EndFunction = closeInjector5;
+        }
+        break;
+
+    case INJ_SEQUENTIAL:
+        //Sequential injection
+        inj1StartFunction = openInjector1;
+        inj1EndFunction = closeInjector1;
+        inj2StartFunction = openInjector2;
+        inj2EndFunction = closeInjector2;
+        inj3StartFunction = openInjector3;
+        inj3EndFunction = closeInjector3;
+        inj4StartFunction = openInjector4;
+        inj4EndFunction = closeInjector4;
+        inj5StartFunction = openInjector5;
+        inj5EndFunction = closeInjector5;
+        inj6StartFunction = openInjector6;
+        inj6EndFunction = closeInjector6;
+        inj7StartFunction = openInjector7;
+        inj7EndFunction = closeInjector7;
+        inj8StartFunction = openInjector8;
+        inj8EndFunction = closeInjector8;
+        break;
+
+    default:
+        //Paired injection
+        inj1StartFunction = openInjector1;
+        inj1EndFunction = closeInjector1;
+        inj2StartFunction = openInjector2;
+        inj2EndFunction = closeInjector2;
+        inj3StartFunction = openInjector3;
+        inj3EndFunction = closeInjector3;
+        inj4StartFunction = openInjector4;
+        inj4EndFunction = closeInjector4;
+        inj5StartFunction = openInjector5;
+        inj5EndFunction = closeInjector5;
+        break;
+    }
 
     switch(configPage4.sparkMode)
     {
@@ -972,15 +1088,21 @@ void initialiseAll()
     unsigned long primingValue = table2D_getValue(&PrimingPulseTable, currentStatus.coolant + CALIBRATION_TEMPERATURE_OFFSET);
     if(primingValue > 0)
     {
-      setFuelSchedule1(100, (primingValue * 100 * 5)); //to achieve long enough priming pulses, the values in tunerstudio are divided by 0.5 instead of 0.1, so multiplier of 5 is required.
-      setFuelSchedule2(100, (primingValue * 100 * 5));
-      setFuelSchedule3(100, (primingValue * 100 * 5));
-      setFuelSchedule4(100, (primingValue * 100 * 5));
+      if(channel1InjEnabled == true) { setFuelSchedule1(100, (primingValue * 100 * 5)); } //to achieve long enough priming pulses, the values in tunerstudio are divided by 0.5 instead of 0.1, so multiplier of 5 is required.
+      if(channel2InjEnabled == true) { setFuelSchedule2(100, (primingValue * 100 * 5)); }
+      if(channel3InjEnabled == true) { setFuelSchedule3(100, (primingValue * 100 * 5)); }
+      if(channel4InjEnabled == true) { setFuelSchedule4(100, (primingValue * 100 * 5)); }
       #if INJ_CHANNELS >= 5
-      setFuelSchedule5(100, (primingValue * 100 * 5));
+      if(channel5InjEnabled == true) { setFuelSchedule5(100, (primingValue * 100 * 5)); }
       #endif
       #if INJ_CHANNELS >= 6
-      setFuelSchedule6(100, (primingValue * 100 * 5));
+      if(channel6InjEnabled == true) { setFuelSchedule6(100, (primingValue * 100 * 5)); }
+      #endif
+      #if INJ_CHANNELS >= 7
+      if(channel7InjEnabled == true) { setFuelSchedule7(100, (primingValue * 100 * 5)); }
+      #endif
+      #if INJ_CHANNELS >= 8
+      if(channel8InjEnabled == true) { setFuelSchedule8(100, (primingValue * 100 * 5)); }
       #endif
     }
 
@@ -1278,12 +1400,12 @@ void setPinMapping(byte boardID)
         pinO2 = A8; //O2 Sensor pin
         pinBat = A4; //Battery reference voltage pin
         pinBaro = pinMAP;
-        pinIdle1 = PB2; //Single wire idle control
-        pinBoost = PA8; //Boost control
+        pinIdle1 = PA5; //Single wire idle control
+        pinBoost = PA6; //Boost control
         //pinVVT_1 = 4; //Default VVT output
         pinStepperDir = PC15; //Direction pin  for DRV8825 driver
         pinStepperStep = PC14; //Step pin for DRV8825 driver
-        pinStepperEnable = PC13; //Enable pin for DRV8825
+        //pinStepperEnable = PC13; //Enable pin for DRV8825
         pinFuelPump = PB10; //Fuel pump output
         pinTachOut = PC13; //Tacho output pin
         //external interrupt enabled pins
@@ -1841,18 +1963,19 @@ void setPinMapping(byte boardID)
         MC33810_BIT_INJ2 = 1;
         MC33810_BIT_INJ3 = 0;
         MC33810_BIT_INJ4 = 2;
-        MC33810_BIT_IGN1 = 5;
-        MC33810_BIT_IGN2 = 6;
-        MC33810_BIT_IGN3 = 7;
-        MC33810_BIT_IGN4 = 8;
+        MC33810_BIT_IGN1 = 4;
+        MC33810_BIT_IGN2 = 5;
+        MC33810_BIT_IGN3 = 6;
+        MC33810_BIT_IGN4 = 7;
+
         MC33810_BIT_INJ5 = 3;
         MC33810_BIT_INJ6 = 1;
         MC33810_BIT_INJ7 = 0;
         MC33810_BIT_INJ8 = 2;
-        MC33810_BIT_IGN5 = 5;
-        MC33810_BIT_IGN6 = 6;
-        MC33810_BIT_IGN7 = 7;
-        MC33810_BIT_IGN8 = 8;
+        MC33810_BIT_IGN5 = 4;
+        MC33810_BIT_IGN6 = 5;
+        MC33810_BIT_IGN7 = 6;
+        MC33810_BIT_IGN8 = 7;
       #endif
 
       #ifdef USE_SPI_EEPROM
@@ -2210,12 +2333,17 @@ void setPinMapping(byte boardID)
     pinMode(pinCoil4, OUTPUT);
     pinMode(pinCoil5, OUTPUT);
     pinMode(pinCoil6, OUTPUT);
+    pinMode(pinCoil7, OUTPUT);
+    pinMode(pinCoil8, OUTPUT);
+	
     pinMode(pinInjector1, OUTPUT);
     pinMode(pinInjector2, OUTPUT);
     pinMode(pinInjector3, OUTPUT);
     pinMode(pinInjector4, OUTPUT);
     pinMode(pinInjector5, OUTPUT);
     pinMode(pinInjector6, OUTPUT);
+    pinMode(pinInjector7, OUTPUT);
+    pinMode(pinInjector8, OUTPUT);
 
     inj1_pin_port = portOutputRegister(digitalPinToPort(pinInjector1));
     inj1_pin_mask = digitalPinToBitMask(pinInjector1);
@@ -2251,9 +2379,9 @@ void setPinMapping(byte boardID)
     ign8_pin_port = portOutputRegister(digitalPinToPort(pinCoil8));
     ign8_pin_mask = digitalPinToBitMask(pinCoil8);
   #else
-    mc33810_1_pin_port = portOutputRegister(pinMC33810_1_CS);
+    mc33810_1_pin_port = portOutputRegister(digitalPinToPort(pinMC33810_1_CS));
     mc33810_1_pin_mask = digitalPinToBitMask(pinMC33810_1_CS);
-    mc33810_2_pin_port = portOutputRegister(pinMC33810_2_CS);
+    mc33810_2_pin_port = portOutputRegister(digitalPinToPort(pinMC33810_2_CS));
     mc33810_2_pin_mask = digitalPinToBitMask(pinMC33810_2_CS);
 
     initMC33810();

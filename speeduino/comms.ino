@@ -271,7 +271,7 @@ void command()
       break;
 
     case 'S': // send code version
-      Serial.print(F("Speeduino 2020.02"));
+      Serial.print(F("Speeduino 2020.03-dev"));
       currentStatus.secl = 0; //This is required in TS3 due to its stricter timings
       break;
 
@@ -1845,6 +1845,12 @@ void commandButtons(int buttonCommand)
       #if INJ_CHANNELS >= 6
       closeInjector6();
       #endif
+      #if INJ_CHANNELS >= 7
+      closeInjector7();
+      #endif
+      #if INJ_CHANNELS >= 8
+      closeInjector8();
+      #endif
       break;
 
     case 257: // cmd is enable
@@ -1938,6 +1944,37 @@ void commandButtons(int buttonCommand)
 
       break;
 
+    case 531: // cmd group is for injector5 on actions
+        #if INJ_CHANNELS >= 7
+        if( BIT_CHECK(currentStatus.testOutputs, 1) ){ openInjector7(); }
+        #endif
+      break;
+
+    case 532: // cmd group is for injector5 off actions
+        #if INJ_CHANNELS >= 7
+        if( BIT_CHECK(currentStatus.testOutputs, 1) ){ closeInjector7(); }
+        #endif
+      break;
+
+    case 533: // cmd group is for injector5 50%dc actions
+
+      break;
+
+    case 534: // cmd group is for injector6 on actions
+        #if INJ_CHANNELS >= 8
+        if( BIT_CHECK(currentStatus.testOutputs, 1) ){ openInjector8(); }
+        #endif
+      break;
+
+    case 535: // cmd group is for injector6 off actions
+        #if INJ_CHANNELS >= 8
+        if( BIT_CHECK(currentStatus.testOutputs, 1) ){ closeInjector8(); }
+        #endif
+      break;
+
+    case 536: // cmd group is for injector6 50% dc actions
+
+      break;
     case 769: // cmd group is for spark1 on actions
         if( BIT_CHECK(currentStatus.testOutputs, 1) ) { digitalWrite(pinCoil1, coilHIGH); }
       break;
