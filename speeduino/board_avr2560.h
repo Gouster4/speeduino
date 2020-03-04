@@ -88,9 +88,9 @@
   #define FUEL1_TIMER_DISABLE() TIMSK3 &= ~(1 << OCIE3A); //Turn off this output compare unit
   #define FUEL2_TIMER_DISABLE() TIMSK3 &= ~(1 << OCIE3B); //Turn off this output compare unit
   #define FUEL3_TIMER_DISABLE() TIMSK3 &= ~(1 << OCIE3C); //Turn off this output compare unit
-  #define FUEL4_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4A); //Turn off this output compare unit
-  #define FUEL5_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4B); //
-  #define FUEL6_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4C); //
+  #define FUEL4_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4B); //Turn off this output compare unit
+  #define FUEL5_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4C); //
+  #define FUEL6_TIMER_DISABLE() TIMSK4 &= ~(1 << OCIE4A); //
   #define FUEL7_TIMER_DISABLE() TIMSK5 &= ~(1 << OCIE5C); //
   #define FUEL8_TIMER_DISABLE() TIMSK5 &= ~(1 << OCIE5B); //
 

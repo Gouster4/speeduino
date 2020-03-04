@@ -149,8 +149,8 @@ void beginCoil1or4Charge()
     {
     tachoOutputFlag = READY;
     //change ignition pin based on which rotation engine is
-	int crankAngle = getCrankAngle();
-    if(crankAngle < 360 ){
+    int crankAngle = getCrankAngle();
+    if(crankAngle > 480 ){
         digitalWrite(pinCoil1, coilHIGH);
         }
     else{
@@ -166,8 +166,8 @@ void endCoil1or4Charge()
 void beginCoil2or5Charge()
     {
     tachoOutputFlag = READY;
-	int crankAngle = getCrankAngle();
-    if(crankAngle < 360 ){
+    int crankAngle = getCrankAngle();
+    if(crankAngle < 180 ){
         digitalWrite(pinCoil2, coilHIGH);
         }
     else{
@@ -182,8 +182,8 @@ void endCoil2or5Charge()
 void beginCoil3or6Charge()
     {
     tachoOutputFlag = READY;
-	int crankAngle = getCrankAngle();
-    if(crankAngle < 360 ){
+    int crankAngle = getCrankAngle();
+    if(crankAngle < 300 ){
         digitalWrite(pinCoil3, coilHIGH);
         }
     else{
