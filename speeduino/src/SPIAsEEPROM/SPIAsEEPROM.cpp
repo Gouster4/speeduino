@@ -42,7 +42,7 @@ SPIAsEEPROM::SPIAsEEPROM()
     magicbuf[3] = 0x00;
 
   }
-  uint8_t SPIAsEEPROM::begin(uint8_t pinSPIFlash_CS=6)
+  uint8_t SPIAsEEPROM::begin(uint8_t pinSPIFlash_CS=PA15)
   {
       pinMode(pinSPIFlash_CS, OUTPUT);
       SpiFlashAvialable = winbondSPIFlash.begin(_W25Q16,SPI, pinSPIFlash_CS);
