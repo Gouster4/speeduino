@@ -29,9 +29,13 @@
 
 #elif defined(STM32_MCU_SERIES) || defined(ARDUINO_ARCH_STM32) || defined(STM32)
   #define CORE_STM32
-  //These should be updated to 8 later, but there's bits missing currently
-  #define INJ_CHANNELS 8
-  #define IGN_CHANNELS 8
+  #define INJ_CHANNELS 4
+  #define IGN_CHANNELS 5
+//F407 can do 8x8 sequential
+  #if defined(ARDUINO_BLACK_F407VE)
+   #define INJ_CHANNELS 8
+   #define IGN_CHANNELS 8
+  #endif
 
 //Select one for EEPROM, default are emulated and is very slow
 //define SRAM_AS_EEPROM /*Use RTC registers, requires a 3V battery connected to Vbat pin */

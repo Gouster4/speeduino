@@ -1750,9 +1750,9 @@ void setPinMapping(byte boardID)
         pinCoil4 = PD8; //
         pinCoil5 = PD9;//
         pinFan = PD10; //
-        /* = PD11; */ //
-        /* = PD12; */ //
-        /* = PD13; */ //
+        pinCoil6 = PD11; //
+        pinCoil7 = PD12; //
+        pinCoil8 = PD13; //
         /* = PD14; */ //
         /* = PD15; */ //
         pinStepperDir = PE0; //
@@ -1769,8 +1769,8 @@ void setPinMapping(byte boardID)
         pinInjector5 = PE11; //
         pinInjector6 = PE12; //
         pinTrigger2 = PE13; //
-        /* = PE14; */ //
-        /* = PE15; */ //
+        pinInjector7 = PE14; //
+        pinInjector8 = PE15; //
       #endif
       break;
 
