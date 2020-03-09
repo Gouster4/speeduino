@@ -206,6 +206,10 @@ void fuelSchedule1Interrupt(HardwareTimer*);
 void fuelSchedule2Interrupt(HardwareTimer*);
 void fuelSchedule3Interrupt(HardwareTimer*);
 void fuelSchedule4Interrupt(HardwareTimer*);
+void fuelSchedule5Interrupt(HardwareTimer*);
+void fuelSchedule6Interrupt(HardwareTimer*);
+void fuelSchedule7Interrupt(HardwareTimer*);
+void fuelSchedule8Interrupt(HardwareTimer*);
 void idleInterrupt(HardwareTimer*);
 void vvtInterrupt(HardwareTimer*);
 void ignitionSchedule1Interrupt(HardwareTimer*);
@@ -213,6 +217,9 @@ void ignitionSchedule2Interrupt(HardwareTimer*);
 void ignitionSchedule3Interrupt(HardwareTimer*);
 void ignitionSchedule4Interrupt(HardwareTimer*);
 void ignitionSchedule5Interrupt(HardwareTimer*);
+void ignitionSchedule6Interrupt(HardwareTimer*);
+void ignitionSchedule7Interrupt(HardwareTimer*);
+void ignitionSchedule8Interrupt(HardwareTimer*);
 
 /*
 ***********************************************************************************************************

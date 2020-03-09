@@ -165,6 +165,10 @@
   void fuelSchedule2Interrupt(HardwareTimer*){fuelSchedule2Interrupt();}
   void fuelSchedule3Interrupt(HardwareTimer*){fuelSchedule3Interrupt();}
   void fuelSchedule4Interrupt(HardwareTimer*){fuelSchedule4Interrupt();}
+  void fuelSchedule5Interrupt(HardwareTimer*){fuelSchedule5Interrupt();}
+  void fuelSchedule6Interrupt(HardwareTimer*){fuelSchedule6Interrupt();}
+  void fuelSchedule7Interrupt(HardwareTimer*){fuelSchedule7Interrupt();}
+  void fuelSchedule8Interrupt(HardwareTimer*){fuelSchedule8Interrupt();}
   void idleInterrupt(HardwareTimer*){idleInterrupt();}
   void vvtInterrupt(HardwareTimer*){vvtInterrupt();}
   void ignitionSchedule1Interrupt(HardwareTimer*){ignitionSchedule1Interrupt();}
@@ -172,5 +176,8 @@
   void ignitionSchedule3Interrupt(HardwareTimer*){ignitionSchedule3Interrupt();}
   void ignitionSchedule4Interrupt(HardwareTimer*){ignitionSchedule4Interrupt();}
   void ignitionSchedule5Interrupt(HardwareTimer*){ignitionSchedule5Interrupt();}
+  void ignitionSchedule6Interrupt(HardwareTimer*){ignitionSchedule6Interrupt();}
+  void ignitionSchedule7Interrupt(HardwareTimer*){ignitionSchedule7Interrupt();}
+  void ignitionSchedule8Interrupt(HardwareTimer*){ignitionSchedule8Interrupt();}
 
 #endif
