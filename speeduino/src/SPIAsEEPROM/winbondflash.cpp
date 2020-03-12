@@ -355,7 +355,8 @@ bool winbondFlashSPI::begin(partNumber _partno,SPIClass &_spi,uint8_t _nss)
  // pinMode(MISO,INPUT_PULLUP);
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
-  SPI.setClockDivider(SPI_CLOCK_DIV2);
+  SPI.setClockDivider(1);
+//  SPI.setClockDivider(SPI_CLOCK_DIV2);
   SPI.setDataMode(SPI_MODE0);
   deselect();
  // Serial.println("SPI OK");
