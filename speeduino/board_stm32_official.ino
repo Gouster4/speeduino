@@ -120,8 +120,8 @@
     Timer2.attachInterrupt(3, ignitionSchedule3Interrupt);
     Timer2.attachInterrupt(4, ignitionSchedule4Interrupt);
     #if (IGN_CHANNELS >= 5)
+	Timer4.setOverflow(0xFFFF, MICROSEC_FORMAT);
     Timer4.setPrescaleFactor(((Timer4.getTimerClkFreq()/1000000) * 4)-1);   //4us resolution
-    Timer4.setOverflow(0xFFFF, MICROSEC_FORMAT);
     Timer4.setMode(1, TIMER_OUTPUT_COMPARE);
     Timer4.attachInterrupt(1, ignitionSchedule5Interrupt);
     #endif
