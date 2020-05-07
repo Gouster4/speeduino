@@ -506,7 +506,10 @@ void triggerSec_missingTooth()
     //Record the VVT Angle
     if(secondaryToothCount == 1)
     {
-      currentStatus.vvtAngle = getCrankAngle();
+      int tempangle;
+	  tempangle = getCrankAngle();
+	  if(tempangle > 360){ tempangle = tempangle - 360; }
+	  currentStatus.vvtAngle = tempangle - configPage10.vvtCLMinAng;
     }
   } //Trigger filter
 }
