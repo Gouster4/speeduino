@@ -2563,6 +2563,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_missingTooth;
       getCrankAngle = getCrankAngle_missingTooth;
+      getCamAngle = getCamAngle_missingTooth;
       triggerSetEndTeeth = triggerSetEndTeeth_missingTooth;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2587,6 +2588,7 @@ void initialiseTriggers()
       triggerHandler = triggerPri_BasicDistributor;
       getRPM = getRPM_BasicDistributor;
       getCrankAngle = getCrankAngle_BasicDistributor;
+      getCamAngle = getCamAngle_BasicDistributor;
       triggerSetEndTeeth = triggerSetEndTeeth_BasicDistributor;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2602,6 +2604,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_DualWheel;
       getCrankAngle = getCrankAngle_DualWheel;
+      getCamAngle = getCamAngle_DualWheel;
       triggerSetEndTeeth = triggerSetEndTeeth_DualWheel;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2618,6 +2621,7 @@ void initialiseTriggers()
       triggerHandler = triggerPri_GM7X;
       getRPM = getRPM_GM7X;
       getCrankAngle = getCrankAngle_GM7X;
+      getCamAngle = getCamAngle_GM7X;
       triggerSetEndTeeth = triggerSetEndTeeth_GM7X;
 
       if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2636,6 +2640,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_4G63;
       getCrankAngle = getCrankAngle_4G63;
+      getCamAngle = getCamAngle_4G63;
       triggerSetEndTeeth = triggerSetEndTeeth_4G63;
 
       primaryTriggerEdge = CHANGE;
@@ -2652,6 +2657,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_24X;
       getCrankAngle = getCrankAngle_24X;
+      getCamAngle = getCamAngle_24X;
       triggerSetEndTeeth = triggerSetEndTeeth_24X;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2669,6 +2675,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_Jeep2000;
       getCrankAngle = getCrankAngle_Jeep2000;
+      getCamAngle = getCamAngle_Jeep2000;
       triggerSetEndTeeth = triggerSetEndTeeth_Jeep2000;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2686,6 +2693,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_Audi135;
       getCrankAngle = getCrankAngle_Audi135;
+      getCamAngle = getCamAngle_Audi135;
       triggerSetEndTeeth = triggerSetEndTeeth_Audi135;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2703,6 +2711,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_HondaD17;
       getCrankAngle = getCrankAngle_HondaD17;
+      getCamAngle = getCamAngle_HondaD17;
       triggerSetEndTeeth = triggerSetEndTeeth_HondaD17;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2720,6 +2729,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_Miata9905;
       getCrankAngle = getCrankAngle_Miata9905;
+      getCamAngle = getCamAngle_Miata9905;
       triggerSetEndTeeth = triggerSetEndTeeth_Miata9905;
 
       //These may both need to change, not sure
@@ -2739,6 +2749,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_MazdaAU;
       getCrankAngle = getCrankAngle_MazdaAU;
+      getCamAngle = getCamAngle_MazdaAU;
       triggerSetEndTeeth = triggerSetEndTeeth_MazdaAU;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2756,6 +2767,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_non360;
       getCrankAngle = getCrankAngle_non360;
+      getCamAngle = getCamAngle_non360;
       triggerSetEndTeeth = triggerSetEndTeeth_non360;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2773,6 +2785,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_Nissan360;
       getCrankAngle = getCrankAngle_Nissan360;
+      getCamAngle = getCamAngle_Nissan360;
       triggerSetEndTeeth = triggerSetEndTeeth_Nissan360;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2790,6 +2803,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_Subaru67;
       getCrankAngle = getCrankAngle_Subaru67;
+      getCamAngle = getCamAngle_Subaru67;
       triggerSetEndTeeth = triggerSetEndTeeth_Subaru67;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2805,6 +2819,7 @@ void initialiseTriggers()
       triggerHandler = triggerPri_Daihatsu;
       getRPM = getRPM_Daihatsu;
       getCrankAngle = getCrankAngle_Daihatsu;
+      getCamAngle = getCamAngle_Daihatsu;
       triggerSetEndTeeth = triggerSetEndTeeth_Daihatsu;
 
       //No secondary input required for this pattern
@@ -2820,6 +2835,7 @@ void initialiseTriggers()
       //triggerSecondaryHandler = triggerSec_Harley;
       getRPM = getRPM_Harley;
       getCrankAngle = getCrankAngle_Harley;
+      getCamAngle = getCamAngle_Harley;
       triggerSetEndTeeth = triggerSetEndTeeth_Harley;
 
       primaryTriggerEdge = RISING; //Always rising
@@ -2834,6 +2850,7 @@ void initialiseTriggers()
       decoderHasSecondary = true;
       getRPM = getRPM_ThirtySixMinus222;
       getCrankAngle = getCrankAngle_missingTooth; //This uses the same function as the missing tooth decoder, so no need to duplicate code
+      getCamAngle = getCamAngle_ThirtySixMinus222;
       triggerSetEndTeeth = triggerSetEndTeeth_ThirtySixMinus222;
 
       if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
@@ -2849,6 +2866,7 @@ void initialiseTriggers()
       triggerHandler = triggerPri_missingTooth;
       getRPM = getRPM_missingTooth;
       getCrankAngle = getCrankAngle_missingTooth;
+      getCamAngle = getCamAngle_missingTooth;
 
       if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
       else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }

@@ -14,6 +14,7 @@ Each decoder must have the following 4 functions (Where xxxx is the decoder name
 * triggerSec_xxxx - Called each time the secondary (No. 2) crank/cam signal is triggered (Called as an interrupt, so variables must be declared volatile)
 * getRPM_xxxx - Returns the current RPM, as calculated by the decoder
 * getCrankAngle_xxxx - Returns the current crank angle, as calculated b the decoder
+* getCamAngle_xxxx - Returns the current cam angle for VVT, as calculated b the decoder
 
 And each decoder must utlise at least the following variables:
 toothLastToothTime - The time (In uS) that the last primary tooth was 'seen'
@@ -31,6 +32,7 @@ void (*triggerHandler)(); //Pointer for the trigger function (Gets pointed to th
 void (*triggerSecondaryHandler)(); //Pointer for the secondary trigger function (Gets pointed to the relevant decoder)
 uint16_t (*getRPM)(); //Pointer to the getRPM function (Gets pointed to the relevant decoder)
 int (*getCrankAngle)(); //Pointer to the getCrank Angle function (Gets pointed to the relevant decoder)
+int (*getCamAngle)(); //Pointer to the get Cam Angle for VVT function (Gets pointed to the relevant decoder)
 void (*triggerSetEndTeeth)(); //Pointer to the triggerSetEndTeeth function of each decoder
 
 volatile unsigned long curTime;
@@ -500,6 +502,12 @@ void triggerSec_missingTooth()
       secondaryToothCount++;
     }
     toothLastSecToothTime = curTime2;
+
+    //Record the VVT Angle
+    if(secondaryToothCount == 1)
+    {
+      currentStatus.vvtAngle = getCrankAngle();
+    }
   } //Trigger filter
 }
 
@@ -551,6 +559,7 @@ int getCrankAngle_missingTooth()
 
     return crankAngle;
 }
+int getCamAngle_missingTooth() {return currentStatus.vvtAngle;}
 
 void triggerSetEndTeeth_missingTooth()
 {
@@ -756,6 +765,9 @@ int getCrankAngle_DualWheel()
     return crankAngle;
 }
 
+int getCamAngle_DualWheel()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_DualWheel()
 {
   //The toothAdder variable is used for when a setup is running sequentially, but the primary wheel is running at crank speed. This way the count of teeth will go up to 2* the number of primary teeth to allow for a sequential count. 
@@ -943,6 +955,9 @@ int getCrankAngle_BasicDistributor()
     return crankAngle;
 }
 
+int getCamAngle_BasicDistributor()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_BasicDistributor()
 {
 
@@ -1080,6 +1095,9 @@ int getCrankAngle_GM7X()
 
     return crankAngle;
 }
+
+int getCamAngle_GM7X()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_GM7X()
 {
@@ -1494,6 +1512,9 @@ int getCrankAngle_4G63()
     return crankAngle;
 }
 
+int getCamAngle_4G63()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_4G63()
 {
   if(configPage2.nCylinders == 4)
@@ -1651,6 +1672,9 @@ int getCrankAngle_24X()
     return crankAngle;
 }
 
+int getCamAngle_24X()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_24X()
 {
 
@@ -1757,6 +1781,9 @@ int getCrankAngle_Jeep2000()
 
     return crankAngle;
 }
+
+int getCamAngle_Jeep2000()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_Jeep2000()
 {
@@ -1878,6 +1905,9 @@ int getCrankAngle_Audi135()
     return crankAngle;
 }
 
+int getCamAngle_Audi135()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_Audi135()
 {
   lastToothCalcAdvance = currentStatus.advance;
@@ -1975,6 +2005,9 @@ int getCrankAngle_HondaD17()
 
     return crankAngle;
 }
+
+int getCamAngle_HondaD17()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_HondaD17()
 {
@@ -2399,6 +2432,9 @@ int getCrankAngle_MazdaAU()
     return crankAngle;
 }
 
+int getCamAngle_MazdaAU()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_MazdaAU()
 {
   lastToothCalcAdvance = currentStatus.advance;
@@ -2471,6 +2507,9 @@ int getCrankAngle_non360()
 
     return crankAngle;
 }
+
+int getCamAngle_non360()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_non360()
 {
@@ -2688,6 +2727,9 @@ int getCrankAngle_Nissan360()
 
   return crankAngle;
 }
+
+int getCamAngle_Nissan360()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_Nissan360()
 {
@@ -2913,6 +2955,9 @@ int getCrankAngle_Subaru67()
   return crankAngle;
 }
 
+int getCamAngle_Subaru67()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_Subaru67()
 {
   if(configPage4.sparkMode == IGN_MODE_SEQUENTIAL)
@@ -3111,6 +3156,9 @@ int getCrankAngle_Daihatsu()
     return crankAngle;
 }
 
+int getCamAngle_Daihatsu()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_Daihatsu()
 {
   lastToothCalcAdvance = currentStatus.advance;
@@ -3250,6 +3298,9 @@ int getCrankAngle_Harley()
   return crankAngle;
 }
 
+int getCamAngle_Harley()
+{return 0;} //Not implemented
+
 void triggerSetEndTeeth_Harley()
 {
   lastToothCalcAdvance = currentStatus.advance;
@@ -3383,6 +3434,9 @@ int getCrankAngle_ThirtySixMinus222()
     //NOT USED - This pattern uses the missing tooth version of this function
     return 0;
 }
+
+int getCamAngle_ThirtySixMinus222()
+{return 0;} //Not implemented
 
 void triggerSetEndTeeth_ThirtySixMinus222()
 {

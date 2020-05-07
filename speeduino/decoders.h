@@ -25,6 +25,7 @@ void triggerPri_missingTooth();
 void triggerSec_missingTooth();
 uint16_t getRPM_missingTooth();
 int getCrankAngle_missingTooth();
+int getCamAngle_missingTooth();
 extern void triggerSetEndTeeth_missingTooth();
 
 void triggerSetup_DualWheel();
@@ -32,6 +33,7 @@ void triggerPri_DualWheel();
 void triggerSec_DualWheel();
 uint16_t getRPM_DualWheel();
 int getCrankAngle_DualWheel();
+int getCamAngle_DualWheel();
 void triggerSetEndTeeth_DualWheel();
 
 void triggerSetup_BasicDistributor();
@@ -39,6 +41,7 @@ void triggerPri_BasicDistributor();
 void triggerSec_BasicDistributor();
 uint16_t getRPM_BasicDistributor();
 int getCrankAngle_BasicDistributor();
+int getCamAngle_BasicDistributor();
 void triggerSetEndTeeth_BasicDistributor();
 
 void triggerSetup_GM7X();
@@ -46,6 +49,7 @@ void triggerPri_GM7X();
 void triggerSec_GM7X();
 uint16_t getRPM_GM7X();
 int getCrankAngle_GM7X();
+int getCamAngle_GM7X();
 void triggerSetEndTeeth_GM7X();
 
 void triggerSetup_4G63();
@@ -53,6 +57,7 @@ void triggerPri_4G63();
 void triggerSec_4G63();
 uint16_t getRPM_4G63();
 int getCrankAngle_4G63();
+int getCamAngle_4G63();
 void triggerSetEndTeeth_4G63();
 
 void triggerSetup_24X();
@@ -60,6 +65,7 @@ void triggerPri_24X();
 void triggerSec_24X();
 uint16_t getRPM_24X();
 int getCrankAngle_24X();
+int getCamAngle_24X();
 void triggerSetEndTeeth_24X();
 
 void triggerSetup_Jeep2000();
@@ -67,6 +73,7 @@ void triggerPri_Jeep2000();
 void triggerSec_Jeep2000();
 uint16_t getRPM_Jeep2000();
 int getCrankAngle_Jeep2000();
+int getCamAngle_Jeep2000();
 void triggerSetEndTeeth_Jeep2000();
 
 void triggerSetup_Audi135();
@@ -74,6 +81,7 @@ void triggerPri_Audi135();
 void triggerSec_Audi135();
 uint16_t getRPM_Audi135();
 int getCrankAngle_Audi135();
+int getCamAngle_Audi135();
 void triggerSetEndTeeth_Audi135();
 
 void triggerSetup_HondaD17();
@@ -81,6 +89,7 @@ void triggerPri_HondaD17();
 void triggerSec_HondaD17();
 uint16_t getRPM_HondaD17();
 int getCrankAngle_HondaD17();
+int getCamAngle_HondaD17();
 void triggerSetEndTeeth_HondaD17();
 
 void triggerSetup_Miata9905();
@@ -88,14 +97,15 @@ void triggerPri_Miata9905();
 void triggerSec_Miata9905();
 uint16_t getRPM_Miata9905();
 int getCrankAngle_Miata9905();
-void triggerSetEndTeeth_Miata9905();
 int getCamAngle_Miata9905();
+void triggerSetEndTeeth_Miata9905();
 
 void triggerSetup_MazdaAU();
 void triggerPri_MazdaAU();
 void triggerSec_MazdaAU();
 uint16_t getRPM_MazdaAU();
 int getCrankAngle_MazdaAU();
+int getCamAngle_MazdaAU();
 void triggerSetEndTeeth_MazdaAU();
 
 void triggerSetup_non360();
@@ -103,6 +113,7 @@ void triggerPri_non360();
 void triggerSec_non360();
 uint16_t getRPM_non360();
 int getCrankAngle_non360();
+int getCamAngle_non360();
 void triggerSetEndTeeth_non360();
 
 void triggerSetup_Nissan360();
@@ -110,6 +121,7 @@ void triggerPri_Nissan360();
 void triggerSec_Nissan360();
 uint16_t getRPM_Nissan360();
 int getCrankAngle_Nissan360();
+int getCamAngle_Nissan360();
 void triggerSetEndTeeth_Nissan360();
 
 void triggerSetup_Subaru67();
@@ -117,6 +129,7 @@ void triggerPri_Subaru67();
 void triggerSec_Subaru67();
 uint16_t getRPM_Subaru67();
 int getCrankAngle_Subaru67();
+int getCamAngle_Subaru67();
 void triggerSetEndTeeth_Subaru67();
 
 void triggerSetup_Daihatsu();
@@ -124,6 +137,7 @@ void triggerPri_Daihatsu();
 void triggerSec_Daihatsu();
 uint16_t getRPM_Daihatsu();
 int getCrankAngle_Daihatsu();
+int getCamAngle_Daihatsu();
 void triggerSetEndTeeth_Daihatsu();
 
 void triggerSetup_Harley();
@@ -131,6 +145,7 @@ void triggerPri_Harley();
 void triggerSec_Harley();
 uint16_t getRPM_Harley();
 int getCrankAngle_Harley();
+int getCamAngle_Harley();
 void triggerSetEndTeeth_Harley();
 
 void triggerSetup_ThirtySixMinus222();
@@ -138,12 +153,14 @@ void triggerPri_ThirtySixMinus222();
 void triggerSec_ThirtySixMinus222();
 uint16_t getRPM_ThirtySixMinus222();
 int getCrankAngle_ThirtySixMinus222();
+int getCamAngle_ThirtySixMinus222();
 void triggerSetEndTeeth_ThirtySixMinus222();
 
 extern void (*triggerHandler)(); //Pointer for the trigger function (Gets pointed to the relevant decoder)
 extern void (*triggerSecondaryHandler)(); //Pointer for the secondary trigger function (Gets pointed to the relevant decoder)
 extern uint16_t (*getRPM)(); //Pointer to the getRPM function (Gets pointed to the relevant decoder)
 extern int (*getCrankAngle)(); //Pointer to the getCrank Angle function (Gets pointed to the relevant decoder)
+extern int (*getCamAngle)(); //Pointer to the get Cam Angle for VVT function (Gets pointed to the relevant decoder)
 extern void (*triggerSetEndTeeth)(); //Pointer to the triggerSetEndTeeth function of each decoder
 
 extern volatile unsigned long curTime;

@@ -216,7 +216,7 @@ void vvtControl()
     else if( (configPage6.vvtMode == VVT_MODE_CLOSED_LOOP) )
     {
       //Calculate the current cam angle
-      getCamAngle_Miata9905();
+      getCamAngle();
 
       //Lookup VVT duty based on either MAP or TPS
       if(configPage6.vvtLoadSource == VVT_LOAD_TPS)
