@@ -92,7 +92,7 @@ void initialiseAuxPWM()
 
     if(configPage6.vvtMode == VVT_MODE_CLOSED_LOOP)
     {
-      vvtPID.SetOutputLimits(0, percentage(100, vvt_pwm_max_count)); //80% is a completely arbitrary amount for the max duty cycle, but seems inline with most VVT documentation
+      vvtPID.SetOutputLimits(0, percentage(100, vvt_pwm_max_count)); //the max limit was 80% but that was not enough, so it's 100% now. I think these need to be settings in TS, and not fixed values.
       vvtPID.SetTunings(configPage10.vvtCLKP, configPage10.vvtCLKI, configPage10.vvtCLKD);
       vvtPID.SetSampleTime(30);
       vvtPID.SetMode(AUTOMATIC); //Turn PID on
